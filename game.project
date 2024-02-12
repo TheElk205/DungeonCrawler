@@ -1,0 +1,32 @@
+[bootstrap]
+main_collection = /game/game.collectionc
+
+[script]
+shared_state = 1
+
+[android]
+input_method = HiddenInputField
+
+[project]
+title = DungeonCrawler
+version = 0.1-beta
+publisher = Evee Studios
+developer = ThElk205
+
+[display]
+high_dpi = 1
+
+[label]
+subpixels = 1
+
+[sprite]
+subpixels = 1
+
+[graphics]
+default_texture_min_filter = nearest
+default_texture_mag_filter = nearest
+
+[physics]
+debug = 0
+gravity_y = 0.0
+
