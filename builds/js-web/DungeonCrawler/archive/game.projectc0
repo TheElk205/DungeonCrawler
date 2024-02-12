@@ -1,11 +1,11 @@
 [project]
-title = My Project
-version = 1.0
+title = DungeonCrawler
+version = 0.1-beta
 write_log = 0
 compress_archive = 1
-publisher = unnamed
-developer = unnamed
-title_as_file_name = MyProject
+publisher = Evee Studios
+developer = ThElk205
+title_as_file_name = DungeonCrawler
 
 [display]
 width = 960
