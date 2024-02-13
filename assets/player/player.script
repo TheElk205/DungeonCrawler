@@ -8,6 +8,7 @@ local input_down = hash("down")
 local input_attack = hash("attack")
 local display_width = sys.get_config("display.width")
 local display_height = sys.get_config("display.height")
+
 function init(self)
 	-- Add initialization code here
 	-- Learn more: https://defold.com/manuals/script/
@@ -25,6 +26,7 @@ function init(self)
 	self.direction = 0
 	self.health = 100
 	msg.post("/level#main_gui", "gui_update", { health = self.health })
+	msg.post("#moving", "disable")
 end
 
 function final(self)
@@ -59,7 +61,16 @@ function update(self, dt)
 	local deltapos = self.input * speed * dt
 	go.set_position(go.get_position() + deltapos)
 
+	if vmath.length(self.input) == 0 then
+		msg.post("#moving", "disable")
+		msg.post("#idle", "enable")
+	else
+		msg.post("#moving", "enable")
+		msg.post("#idle", "disable")
+	end
+	sprite.set_hflip("#moving", self.input.x < 0)
 	self.input = vmath.vector3(0,0,0)
+
 end
 
 function angle_between_vectors(v0, v1)
@@ -76,6 +87,15 @@ function fixed_update(self, dt)
 	-- Remove this function if not needed
 end
 
+local function take_damage(self, dmg)
+	particlefx.play("#hit")
+	self.health = self.health - dmg
+	msg.post("/level#main_gui", "gui_update", { health = self.health })
+	if self.health <= 0 then
+		msg.post("controller:/controller", "game_over")
+	end
+end
+
 function on_message(self, message_id, message, sender)
 	-- Add message-handling code here
 	-- Learn more: https://defold.com/manuals/message-passing/
@@ -84,13 +104,11 @@ function on_message(self, message_id, message, sender)
 		-- print("always other id: " ..  msg.url(message['other_id']))
 		-- print("last hit: " ..  msg.url(last_hit_by))
 		-- pprint(message)
-		pprint(message)
 		if message.enter and hash("weapon_enemy") == message["other_group"] then
 			-- pprint("Sender: " .. sender)
 			-- pprint(message)
 			local dmg = go.get(msg.url(nil, message.other_id, "weapon_swing"), "damage")
-			self.health = self.health - dmg
-			msg.post("/level#main_gui", "gui_update", { health = self.health })
+			take_damage(self, dmg)
 		end
 	end
 end

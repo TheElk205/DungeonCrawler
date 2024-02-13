@@ -1,5 +1,5 @@
 images {
-  image: "/assets/weapons/axe_double.png"
+  image: "/assets/sprites/weapons/axe_double.png"
   sprite_trim_mode: SPRITE_TRIM_MODE_OFF
 }
 margin: 0

@@ -1,5 +1,8 @@
 local speed = 16 -- pixels per second
 local last_wall_hit = os.clock()
+local player_focus = false
+
+go.property("attack_speed_seconds", 2)
 
 function init(self)
 	-- Add initialization code here
@@ -14,7 +17,9 @@ function init(self)
 	self.on_target = false
 	self.target = nil
 	self.enemy_direction = 0
+	self.should_move = true
 	label.set_text("#health_label", self.health)
+	msg.post("#death", "disable")
 end
 
 function final(self)
@@ -24,6 +29,9 @@ function final(self)
 end
 
 function update(self, dt)
+	if not self.should_move then 
+		return
+	end
 	-- Add update code here
 	-- Learn more: https://defold.com/manuals/script/
 	-- Remove this function if not needed
@@ -32,6 +40,7 @@ function update(self, dt)
 	end
 	local deltapos = self.direction * speed * dt
 	go.set_position(go.get_position() + deltapos)
+	sprite.set_hflip("#moving", self.direction.x < 0)
 end
 
 function fixed_update(self, dt)
@@ -53,14 +62,29 @@ local function attack(self)
 		swing_angle = 360
 	}
 	local weapons = collectionfactory.create(component, p, nil, props)
-	local weapon = msg.url(weapons["/axe_double"])
+	self.weapon = msg.url(weapons["/axe_double"])
 	local weapon_physics = msg.url(nil, weapons["/axe_double"], "collision_damage")
-	print("weapon")
-	pprint(weapon)
 	physics.set_group(weapon_physics, "weapon_enemy")
 	-- go.set_parent(mweapon, go.get_id())
-	msg.post(weapon, "set_parent", { parent_id = go.get_id(), keep_world_transform = 1 }) -- <7>
+	msg.post(self.weapon, "set_parent", { parent_id = go.get_id(), keep_world_transform = 1 }) -- <7>
 
+end
+
+local function take_damage(self, dmg)
+	particlefx.play("#hit")
+	self.health = self.health - dmg
+	label.set_text("#health_label", self.health)
+	if self.health <= 0 then
+		label.set_text("#health_label", "")
+		self.should_move = false
+		if self.weapon then
+			go.delete(self.weapon)
+		end
+		timer.cancel(player_focus)
+		msg.post("#death", "enable")
+		msg.post("#moving", "disable")
+		timer.delay(1, false, function() go.delete() end)
+	end
 end
 
 function on_message(self, message_id, message, sender)
@@ -76,15 +100,11 @@ function on_message(self, message_id, message, sender)
 			-- pprint("Sender: " .. sender)
 			-- pprint(message)
 			local dmg = go.get(msg.url(nil, message.other_id, "weapon_swing"), "damage")
-			self.health = self.health - dmg
-			label.set_text("#health_label", self.health)
-			if self.health <= 0 then
-				go.delete()
-			end
+			take_damage(self, dmg)
 		end
 
 		if hash("player") == message["other_group"] and hash("radar") == message["own_group"] then
-			if message.enter then
+			if message.enter  and self.health > 0 then
 				self.on_target = true
 				self.target = message["other_id"]
 			elseif not message.enter then
@@ -95,10 +115,10 @@ function on_message(self, message_id, message, sender)
 
 		if hash("player") == message["other_group"] and hash("auto_attack") == message["own_group"] then
 			if message.enter then
-				print("Hitting player")
-				attack()
+				player_focus = timer.delay(self.attack_speed_seconds, true, attack)
+				timer.trigger(player_focus)
 			elseif not message.enter then
-				print("Stop hitting player")
+				timer.cancel(player_focus)
 			end
 		end
 	elseif message_id == hash("collision_response") and os.clock() - last_wall_hit > 0.2 and message["group"] == hash("walls") then
