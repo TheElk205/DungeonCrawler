@@ -1,15 +1,11 @@
-# Welcome to Defold
+# Welcome to Dungeon Crawler
 
-This project was created from the "empty" project template.
+This game was created using the [Defold]() game engine and is solely for figuring how the engine works and how I can use it during a game jam.
 
-The settings in ["game.project"](defold://open?path=/game.project) are all the default. A bootstrap empty ["main.collection"](defold://open?path=/main/main.collection) is included.
-
-Check out [the documentation pages](https://defold.com/learn) for examples, tutorials, manuals and API docs.
-
-If you run into trouble, help is available in [our forum](https://forum.defold.com).
-
-Happy Defolding!
+Current playable version can be found here: [Play!](https://theelk205.github.io/DungeonCrawler/)
 
 ---
 
 Assets by [Kenny](https://www.kenney.nl/)
+Dungeon / Characters: [Tiny Dungeon](https://www.kenney.nl/assets/tiny-dungeon)
+UI: [UI Pack (RPG Expansion)](https://www.kenney.nl/assets/ui-pack-rpg-expansion)
