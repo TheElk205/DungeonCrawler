@@ -1,5 +1,5 @@
 images {
-  image: "/assets/player/knight.png"
+  image: "/assets/sprites/player/knight.png"
   sprite_trim_mode: SPRITE_TRIM_MODE_OFF
 }
 margin: 0

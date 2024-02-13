@@ -1,5 +1,5 @@
 images {
-  image: "/assets/enemies/golem.png"
+  image: "/assets/sprites/enemies/golem.png"
   sprite_trim_mode: SPRITE_TRIM_MODE_OFF
 }
 margin: 0

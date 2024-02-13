@@ -1,5 +1,5 @@
 [bootstrap]
-main_collection = /game/game.collectionc
+main_collection = /game/controllercollection.collectionc
 
 [script]
 shared_state = 1
@@ -9,7 +9,7 @@ input_method = HiddenInputField
 
 [project]
 title = DungeonCrawler
-version = 0.1-beta
+version = 0.2-beta
 publisher = Evee Studios
 developer = ThElk205
 

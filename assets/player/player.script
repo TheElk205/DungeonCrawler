@@ -8,6 +8,7 @@ local input_down = hash("down")
 local input_attack = hash("attack")
 local display_width = sys.get_config("display.width")
 local display_height = sys.get_config("display.height")
+
 function init(self)
 	-- Add initialization code here
 	-- Learn more: https://defold.com/manuals/script/
@@ -91,6 +92,9 @@ function on_message(self, message_id, message, sender)
 			local dmg = go.get(msg.url(nil, message.other_id, "weapon_swing"), "damage")
 			self.health = self.health - dmg
 			msg.post("/level#main_gui", "gui_update", { health = self.health })
+			if self.health <= 0 then
+				msg.post("controller:/controller", "game_over")
+			end
 		end
 	end
 end
