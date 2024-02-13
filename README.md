@@ -6,6 +6,7 @@ Current playable version can be found here: [Play!](https://theelk205.github.io/
 
 ---
 
-Assets by [Kenny](https://www.kenney.nl/)
-Dungeon / Characters: [Tiny Dungeon](https://www.kenney.nl/assets/tiny-dungeon)
-UI: [UI Pack (RPG Expansion)](https://www.kenney.nl/assets/ui-pack-rpg-expansion)
+Assets by [Kenny](https://www.kenney.nl/):
+
+- Dungeon / Characters: [Tiny Dungeon](https://www.kenney.nl/assets/tiny-dungeon)
+- UI: [UI Pack (RPG Expansion)](https://www.kenney.nl/assets/ui-pack-rpg-expansion)
