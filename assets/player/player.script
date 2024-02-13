@@ -26,6 +26,7 @@ function init(self)
 	self.direction = 0
 	self.health = 100
 	msg.post("/level#main_gui", "gui_update", { health = self.health })
+	msg.post("#moving", "disable")
 end
 
 function final(self)
@@ -60,7 +61,16 @@ function update(self, dt)
 	local deltapos = self.input * speed * dt
 	go.set_position(go.get_position() + deltapos)
 
+	if vmath.length(self.input) == 0 then
+		msg.post("#moving", "disable")
+		msg.post("#idle", "enable")
+	else
+		msg.post("#moving", "enable")
+		msg.post("#idle", "disable")
+	end
+	sprite.set_hflip("#moving", self.input.x < 0)
 	self.input = vmath.vector3(0,0,0)
+
 end
 
 function angle_between_vectors(v0, v1)

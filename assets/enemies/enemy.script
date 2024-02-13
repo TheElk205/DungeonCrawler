@@ -17,7 +17,9 @@ function init(self)
 	self.on_target = false
 	self.target = nil
 	self.enemy_direction = 0
+	self.should_move = true
 	label.set_text("#health_label", self.health)
+	msg.post("#death", "disable")
 end
 
 function final(self)
@@ -27,6 +29,9 @@ function final(self)
 end
 
 function update(self, dt)
+	if not self.should_move then 
+		return
+	end
 	-- Add update code here
 	-- Learn more: https://defold.com/manuals/script/
 	-- Remove this function if not needed
@@ -35,6 +40,7 @@ function update(self, dt)
 	end
 	local deltapos = self.direction * speed * dt
 	go.set_position(go.get_position() + deltapos)
+	sprite.set_hflip("#moving", self.direction.x < 0)
 end
 
 function fixed_update(self, dt)
@@ -56,11 +62,11 @@ local function attack(self)
 		swing_angle = 360
 	}
 	local weapons = collectionfactory.create(component, p, nil, props)
-	local weapon = msg.url(weapons["/axe_double"])
+	self.weapon = msg.url(weapons["/axe_double"])
 	local weapon_physics = msg.url(nil, weapons["/axe_double"], "collision_damage")
 	physics.set_group(weapon_physics, "weapon_enemy")
 	-- go.set_parent(mweapon, go.get_id())
-	msg.post(weapon, "set_parent", { parent_id = go.get_id(), keep_world_transform = 1 }) -- <7>
+	msg.post(self.weapon, "set_parent", { parent_id = go.get_id(), keep_world_transform = 1 }) -- <7>
 
 end
 
@@ -69,7 +75,15 @@ local function take_damage(self, dmg)
 	self.health = self.health - dmg
 	label.set_text("#health_label", self.health)
 	if self.health <= 0 then
-		go.delete()
+		label.set_text("#health_label", "")
+		self.should_move = false
+		if self.weapon then
+			go.delete(self.weapon)
+		end
+		timer.cancel(player_focus)
+		msg.post("#death", "enable")
+		msg.post("#moving", "disable")
+		timer.delay(1, false, function() go.delete() end)
 	end
 end
 
@@ -90,7 +104,7 @@ function on_message(self, message_id, message, sender)
 		end
 
 		if hash("player") == message["other_group"] and hash("radar") == message["own_group"] then
-			if message.enter then
+			if message.enter  and self.health > 0 then
 				self.on_target = true
 				self.target = message["other_id"]
 			elseif not message.enter then
