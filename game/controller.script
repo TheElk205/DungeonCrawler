@@ -27,3 +27,11 @@ function on_message(self, message_id, message, sender)
 		print("proxy_unloaded", sender)
 	end
 end
+
+function go_exists(id)
+	if not id then return false end
+	local exists,_ = pcall(function()
+		go.get_position(id)
+	end)
+	return exists
+end
