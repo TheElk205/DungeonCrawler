@@ -77,6 +77,15 @@ function fixed_update(self, dt)
 	-- Remove this function if not needed
 end
 
+local function take_damage(self, dmg)
+	particlefx.play("#hit")
+	self.health = self.health - dmg
+	msg.post("/level#main_gui", "gui_update", { health = self.health })
+	if self.health <= 0 then
+		msg.post("controller:/controller", "game_over")
+	end
+end
+
 function on_message(self, message_id, message, sender)
 	-- Add message-handling code here
 	-- Learn more: https://defold.com/manuals/message-passing/
@@ -85,16 +94,11 @@ function on_message(self, message_id, message, sender)
 		-- print("always other id: " ..  msg.url(message['other_id']))
 		-- print("last hit: " ..  msg.url(last_hit_by))
 		-- pprint(message)
-		pprint(message)
 		if message.enter and hash("weapon_enemy") == message["other_group"] then
 			-- pprint("Sender: " .. sender)
 			-- pprint(message)
 			local dmg = go.get(msg.url(nil, message.other_id, "weapon_swing"), "damage")
-			self.health = self.health - dmg
-			msg.post("/level#main_gui", "gui_update", { health = self.health })
-			if self.health <= 0 then
-				msg.post("controller:/controller", "game_over")
-			end
+			take_damage(self, dmg)
 		end
 	end
 end

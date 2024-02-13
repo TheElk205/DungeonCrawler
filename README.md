@@ -10,3 +10,4 @@ Assets by [Kenny](https://www.kenney.nl/):
 
 - Dungeon / Characters: [Tiny Dungeon](https://www.kenney.nl/assets/tiny-dungeon)
 - UI: [UI Pack (RPG Expansion)](https://www.kenney.nl/assets/ui-pack-rpg-expansion)
+- Characters / weapons / Enemies: [Dungeon Crawler](https://anokolisa.itch.io/dungeon-crawler-pixel-art-asset-pack)

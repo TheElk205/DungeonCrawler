@@ -22,7 +22,6 @@ function on_message(self, message_id, message, sender)
 	-- Remove this function if not needed
 	-- pprint(message)
 	if message_id == hash("gui_update") then
-		pprint(message)
 		local s = gui.get_node("player_health_label")
 		gui.set_text(s, message.health)
 	end
