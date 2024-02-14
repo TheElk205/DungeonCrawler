@@ -77,7 +77,7 @@ local function take_damage(self, dmg)
 	if self.health <= 0 then
 		label.set_text("#health_label", "")
 		self.should_move = false
-		if self.weapon then
+		if go_exists(self.weapon) then
 			go.delete(self.weapon)
 		end
 		timer.cancel(player_focus)

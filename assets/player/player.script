@@ -1,3 +1,5 @@
+local monarch = require "monarch.monarch"
+
 -- max speed right/left
 local max_speed = 450
 
@@ -39,15 +41,19 @@ local function attack(self)
 	local p = go.get_position()
 	local component = "#weapon_factory"
 	local props = {}
-	props[hash("/axe_double")] = { 
-		rotation = self.direction,
-		damage = 12,
-		swing_angle = 90,
-		duration_seconds = 0.2
-	 }
+	props[hash("/weapon")] = { 
+		rotation = self.direction
+	}
+	
 	local weapons = collectionfactory.create(component, p, nil, props)
-	local weapon = msg.url(weapons["/axe_double"])
-
+	pprint(weapons)
+	pprint(weapons[0])
+	local weapon = nil
+	-- we assume that only one weapon will be returned
+	for k,v in pairs(weapons) do
+		weapon = weapons[k]
+		break
+	end
 	-- go.set_parent(mweapon, go.get_id())
 	msg.post(weapon, "set_parent", { parent_id = go.get_id(), keep_world_transform = 1 }) -- <7>
 end
@@ -92,7 +98,7 @@ local function take_damage(self, dmg)
 	self.health = self.health - dmg
 	msg.post("/level#main_gui", "gui_update", { health = self.health })
 	if self.health <= 0 then
-		msg.post("controller:/controller", "game_over")
+		monarch.show(hash("game_over"))
 	end
 end
 
