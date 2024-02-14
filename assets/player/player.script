@@ -1,3 +1,5 @@
+local monarch = require "monarch.monarch"
+
 -- max speed right/left
 local max_speed = 450
 
@@ -96,7 +98,7 @@ local function take_damage(self, dmg)
 	self.health = self.health - dmg
 	msg.post("/level#main_gui", "gui_update", { health = self.health })
 	if self.health <= 0 then
-		msg.post("controller:/controller", "game_over")
+		monarch.show(hash("game_over"))
 	end
 end
 

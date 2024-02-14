@@ -1,37 +1,12 @@
-function init(self)
-	msg.post(".", "acquire_input_focus")
-	msg.post("#menuproxy", "load")
-end
+local monarch = require "monarch.monarch"
 
-function final(self)
-	msg.post(".", "release_input_focus")
+function init(self)
+	msg.post("#", "show_first_screen")
 end
 
 function on_message(self, message_id, message, sender)
-	if message_id == hash("show_game") then
-		msg.post("#gameproxy", "load")
-		msg.post("#menuproxy", "unload")
-		msg.post("#gameoverproxy", "unload")		
-	elseif message_id == hash("show_menu") then
-		msg.post("#menuproxy", "load")
-		msg.post("#gameproxy", "unload")	
-		msg.post("#gameoverproxy", "unload")	
-	elseif message_id == hash("game_over") then
-		msg.post("#menuproxy", "unload")
-		msg.post("#gameoverproxy", "load")
-		msg.post("#gameproxy", "unload")		
-	elseif message_id == hash("proxy_loaded") then
-		print("proxy_loaded", sender)
-		msg.post(sender, "enable")
-	elseif message_id == hash("proxy_unloaded") then
-		print("proxy_unloaded", sender)
+	if message_id == hash("show_first_screen") then
+		monarch.show(hash("splash"))
+		timer.delay(3, false, function() monarch.show(hash("main_menu")) end)
 	end
-end
-
-function go_exists(id)
-	if not id then return false end
-	local exists,_ = pcall(function()
-		go.get_position(id)
-	end)
-	return exists
 end
