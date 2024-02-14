@@ -1,3 +1,5 @@
+local utils = require "game.utils"
+
 local speed = 16 -- pixels per second
 local last_wall_hit = os.clock()
 local player_focus = false

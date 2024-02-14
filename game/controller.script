@@ -1,12 +1,18 @@
 local monarch = require "monarch.monarch"
 
+local is_testing = false
+
 function init(self)
 	msg.post("#", "show_first_screen")
 end
 
 function on_message(self, message_id, message, sender)
 	if message_id == hash("show_first_screen") then
-		monarch.show(hash("splash"))
-		timer.delay(3, false, function() monarch.show(hash("main_menu")) end)
+		if is_testing then
+			monarch.show(hash("game"))
+		else
+			monarch.show(hash("splash"))
+			timer.delay(3, false, function() monarch.show(hash("main_menu")) end)
+		end
 	end
 end
