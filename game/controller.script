@@ -14,5 +14,8 @@ function on_message(self, message_id, message, sender)
 			monarch.show(hash("splash"))
 			timer.delay(3, false, function() monarch.show(hash("main_menu")) end)
 		end
+	elseif message_id == hash("scene_change") then
+		monarch.show(hash(message["scene_name"]))
 	end
+	
 end
