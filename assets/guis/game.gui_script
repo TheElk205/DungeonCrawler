@@ -1,7 +1,11 @@
+local utils = require "game.utils"
+
 function init(self)
 	-- Add initialization code here
 	-- Learn more: https://defold.com/manuals/script/
 	-- Remove this function if not needed
+	self.number_of_spawners = 0
+	reset_playtime()
 end
 
 function final(self)
@@ -14,6 +18,10 @@ function update(self, dt)
 	-- Add update code here
 	-- Learn more: https://defold.com/manuals/script/
 	-- Remove this function if not needed
+	-- _G["playtime"] = _G["playtime"] + dt
+	add_to_playtime(dt)
+	local s = gui.get_node("time_label")
+	gui.set_text(s, math.floor(playtime*100)/100)
 end
 
 function on_message(self, message_id, message, sender)
@@ -24,6 +32,23 @@ function on_message(self, message_id, message, sender)
 	if message_id == hash("gui_update") then
 		local s = gui.get_node("player_health_label")
 		gui.set_text(s, message.health)
+	elseif message_id == hash("spawner_created") then
+		self.number_of_spawners = self.number_of_spawners + 1
+		local s = gui.get_node("spawner_count_label")
+		gui.set_text(s, self.number_of_spawners)
+	elseif message_id == hash("spawner_destroyed") then
+		self.number_of_spawners = self.number_of_spawners - 1
+		local s = gui.get_node("spawner_count_label")
+		gui.set_text(s, self.number_of_spawners)
+		if self.number_of_spawners <= 0 then
+			msg.post("screens:/controller#controller", "scene_change", {
+				scene_name = "game_won",
+				params = {
+					duration = self.tick
+				}
+			})
+		end
+		
 	end
 	
 	-- 

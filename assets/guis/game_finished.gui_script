@@ -1,7 +1,10 @@
 local monarch = require "monarch.monarch"
+local utils = require "game.utils"
 
 function init(self)
 	msg.post(".", "acquire_input_focus")
+	local s = gui.get_node("playtime")
+	gui.set_text(s, math.floor(playtime*100)/100)
 end
 
 function final(self)

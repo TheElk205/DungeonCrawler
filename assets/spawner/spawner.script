@@ -1,0 +1,49 @@
+go.property("seconds_between_spawns", 5)
+go.property("health", 200)
+function spawn_monster()
+	local component = "#spawner_factory"
+	local props = {}
+	props[hash("/enemy")] = { 
+		health = 100
+	}
+	collectionfactory.create(component, p, nil, props)	
+end
+
+function init(self)
+	-- Add initialization code here
+	-- Learn more: https://defold.com/manuals/script/
+	-- Remove this function if not needed
+	label.set_text("#health_label", self.health)
+	msg.post("/level#main_gui", "spawner_created")
+	spawn_monster()
+	timer.delay(self.seconds_between_spawns, true, spawn_monster)
+end
+
+local function take_damage(self, dmg)
+	self.health = self.health - dmg
+	label.set_text("#health_label", self.health)
+	if self.health <= 0 then
+		label.set_text("#health_label", "")
+
+		msg.post("/level#main_gui", "spawner_destroyed")
+		go.delete()
+	end
+end
+
+function on_message(self, message_id, message, sender)
+	-- Add message-handling code here
+	-- Learn more: https://defold.com/manuals/message-passing/
+	-- Remove this function if not needed
+
+	if message_id == hash("trigger_response") then
+		-- print("always other id: " ..  msg.url(message['other_id']))
+		-- print("last hit: " ..  msg.url(last_hit_by))
+		-- pprint(message)
+		if message.enter and hash("weapon") == message["other_group"] then
+			-- pprint("Sender: " .. sender)
+			-- pprint(message)
+			local dmg = go.get(msg.url(nil, message.other_id, "weapon_swing"), "damage")
+			take_damage(self, dmg)
+		end
+	end
+end
