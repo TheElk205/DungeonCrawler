@@ -39,6 +39,46 @@ collection_instances {
     z: 1.9
   }
 }
+collection_instances {
+  id: "spawner1"
+  collection: "/assets/spawner/spawner.collection"
+  position {
+    x: 283.0
+    y: 59.0
+    z: 0.1
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 1.9
+    y: 1.9
+    z: 1.9
+  }
+}
+collection_instances {
+  id: "spawner2"
+  collection: "/assets/spawner/spawner.collection"
+  position {
+    x: 78.0
+    y: 78.0
+    z: 0.1
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 1.9
+    y: 1.9
+    z: 1.9
+  }
+}
 scale_along_z: 0
 embedded_instances {
   id: "level"
