@@ -1,6 +1,6 @@
 [project]
 title = DungeonCrawler
-version = 0.4-beta
+version = 0.5-beta
 write_log = 0
 compress_archive = 1
 publisher = Evee Studios
@@ -155,7 +155,6 @@ custom_heap_size = 0
 heap_size = 256
 htmlfile = /builtins/manifests/web/engine_template.html
 cssfile = /builtins/manifests/web/light_theme.css
-splash_image = /assets/sprites/backgrounds/logo.jpg
 archive_location_prefix = archive
 archive_location_suffix = 
 engine_arguments = --verify-graphics-calls=false
