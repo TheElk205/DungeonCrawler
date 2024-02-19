@@ -1,9 +1,6 @@
 [bootstrap]
 main_collection = /game/screens.collectionc
 
-[script]
-shared_state = 1
-
 [android]
 input_method = HiddenInputField
 
@@ -30,4 +27,9 @@ default_texture_mag_filter = nearest
 [physics]
 debug = 0
 gravity_y = 0.0
+
+[html5]
+splash_image = /assets/sprites/backgrounds/logo.jpg
+show_made_with_defold = 1
+show_console_banner = 0
 

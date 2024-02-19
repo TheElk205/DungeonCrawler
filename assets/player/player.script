@@ -98,7 +98,9 @@ local function take_damage(self, dmg)
 	self.health = self.health - dmg
 	msg.post("/level#main_gui", "gui_update", { health = self.health })
 	if self.health <= 0 then
-		monarch.show(hash("game_over"))
+		msg.post("screens:/controller#controller", "scene_change", {
+			scene_name = "game_over"
+		})
 	end
 end
 

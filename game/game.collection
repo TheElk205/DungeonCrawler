@@ -250,6 +250,7 @@ embedded_instances {
   "    }\\n"
   "    index: 0\\n"
   "    count: 3\\n"
+  "    id: \\\"\\\"\\n"
   "  }\\n"
   "  data: 10.0\\n"
   "  data: 10.0\\n"
