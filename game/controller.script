@@ -1,6 +1,6 @@
 local monarch = require "monarch.monarch"
 
-local is_testing = false
+local is_testing = true
 
 function init(self)
 	msg.post("#", "show_first_screen")
@@ -16,6 +16,7 @@ function on_message(self, message_id, message, sender)
 		end
 	elseif message_id == hash("scene_change") then
 		monarch.show(hash(message["scene_name"]))
+		pprint(message["props"])
 	end
 	
 end

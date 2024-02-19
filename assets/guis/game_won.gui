@@ -275,8 +275,8 @@ nodes {
   }
   type: TYPE_TEXT
   blend_mode: BLEND_MODE_ALPHA
-  text: "Game Over.\n"
-  "You survived:"
+  text: "You won! Great Job!\n"
+  "You made it in:"
   font: "system_font"
   id: "text"
   xanchor: XANCHOR_NONE
