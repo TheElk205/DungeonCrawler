@@ -6,7 +6,7 @@ input_method = HiddenInputField
 
 [project]
 title = DungeonCrawler
-version = 0.6-beta
+version = 0.7-beta
 publisher = Evee Studios
 developer = ThElk205
 dependencies#0 = https://github.com/britzl/monarch/archive/refs/tags/5.1.0.zip
