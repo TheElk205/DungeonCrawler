@@ -31,6 +31,8 @@ function init(self)
 	msg.post("#moving", "disable")
 	msg.post("healthbar/indicator#healthbar", "health", { max_health = self.health, health = self.health})
 	msg.post("healthbar/indicator#healthbar", "follow_me")
+
+	go.set_parent("direction_arrow_pivot", ".", true)
 end
 
 function final(self)
@@ -78,6 +80,10 @@ function update(self, dt)
 	end
 	sprite.set_hflip("#moving", self.input.x < 0)
 	self.input = vmath.vector3(0,0,0)
+
+	go.set("direction_arrow_pivot", "euler.z", self.direction-90)
+	-- go.set_rotation(vmath.vector3(0,0,self.direction), "direction_arrow_pivot")
+	pprint(self.direction)
 	-- pprint(go.get_position())
 end
 
