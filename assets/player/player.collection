@@ -1,4 +1,35 @@
 name: "player"
+collection_instances {
+  id: "healthbar"
+  collection: "/assets/in_game_ui/healthbar.collection"
+  position {
+    x: 0.0
+    y: 10.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  instance_properties {
+    id: "indicator"
+    properties {
+      id: "healthbar"
+      properties {
+        id: "size_max_health"
+        value: "100.0"
+        type: PROPERTY_TYPE_NUMBER
+      }
+    }
+  }
+  scale3 {
+    x: 0.2
+    y: 0.2
+    z: 0.2
+  }
+}
 scale_along_z: 0
 embedded_instances {
   id: "player"

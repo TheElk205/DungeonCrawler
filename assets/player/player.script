@@ -29,6 +29,8 @@ function init(self)
 	self.health = 100
 	msg.post("/level#main_gui", "gui_update", { health = self.health })
 	msg.post("#moving", "disable")
+	msg.post("healthbar/indicator#healthbar", "health", { max_health = self.health, health = self.health})
+	msg.post("healthbar/indicator#healthbar", "follow_me")
 end
 
 function final(self)
@@ -76,7 +78,7 @@ function update(self, dt)
 	end
 	sprite.set_hflip("#moving", self.input.x < 0)
 	self.input = vmath.vector3(0,0,0)
-
+	-- pprint(go.get_position())
 end
 
 function angle_between_vectors(v0, v1)
@@ -97,6 +99,9 @@ local function take_damage(self, dmg)
 	particlefx.play("#hit")
 	self.health = self.health - dmg
 	msg.post("/level#main_gui", "gui_update", { health = self.health })
+
+	msg.post("healthbar/indicator#healthbar", "health", { health = self.health})
+	-- go.set("healthbar/go1#healthbar", "health", self.health)
 	if self.health <= 0 then
 		msg.post("screens:/controller#controller", "scene_change", {
 			scene_name = "game_over"

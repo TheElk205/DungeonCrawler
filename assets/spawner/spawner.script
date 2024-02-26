@@ -1,30 +1,41 @@
 go.property("seconds_between_spawns", 5)
 go.property("health", 200)
+
 function spawn_monster()
 	local component = "#spawner_factory"
 	local props = {}
 	props[hash("/enemy")] = { 
 		health = 100
 	}
-	collectionfactory.create(component, p, nil, props)	
+	local created = collectionfactory.create(component, p, nil, props)	
+	-- pprint(created)
+	local clean_created = {}
+	for key, value in pairs(created) do
+		pprint(hash(key))
+	end
+	pprint(clean_created)
+	for key, value in pairs(created) do
+		pprint(value)
+		msg.post(value, "mapping", clean_created)
+	end
 end
 
 function init(self)
 	-- Add initialization code here
 	-- Learn more: https://defold.com/manuals/script/
 	-- Remove this function if not needed
-	label.set_text("#health_label", self.health)
 	msg.post("/level#main_gui", "spawner_created")
+
+	msg.post("healthbar/indicator#healthbar", "health", { max_health = self.health, health = self.health})
+	msg.post("healthbar/indicator#healthbar", "follow_me")
 	spawn_monster()
 	timer.delay(self.seconds_between_spawns, true, spawn_monster)
 end
 
 local function take_damage(self, dmg)
-	self.health = self.health - dmg
-	label.set_text("#health_label", self.health)
+	self.health = math.max(0, self.health - dmg)
+	msg.post("healthbar/indicator#healthbar", "health", { health = self.health})
 	if self.health <= 0 then
-		label.set_text("#health_label", "")
-
 		msg.post("/level#main_gui", "spawner_destroyed")
 		go.delete()
 	end

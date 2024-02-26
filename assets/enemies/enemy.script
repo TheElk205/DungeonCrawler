@@ -20,7 +20,8 @@ function init(self)
 	self.target = nil
 	self.enemy_direction = 0
 	self.should_move = true
-	label.set_text("#health_label", self.health)
+	msg.post("healthbar/indicator#healthbar", "health", { max_health = self.health,  health = self.health})
+	msg.post("healthbar/indicator#healthbar", "follow_me")
 	msg.post("#death", "disable")
 end
 
@@ -69,15 +70,13 @@ local function attack(self)
 	physics.set_group(weapon_physics, "weapon_enemy")
 	-- go.set_parent(mweapon, go.get_id())
 	msg.post(self.weapon, "set_parent", { parent_id = go.get_id(), keep_world_transform = 1 }) -- <7>
-
 end
 
 local function take_damage(self, dmg)
 	particlefx.play("#hit")
 	self.health = self.health - dmg
-	label.set_text("#health_label", self.health)
+	msg.post("healthbar/indicator#healthbar", "health", { health = self.health})
 	if self.health <= 0 then
-		label.set_text("#health_label", "")
 		self.should_move = false
 		if go_exists(self.weapon) then
 			go.delete(self.weapon)

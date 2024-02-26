@@ -34,9 +34,9 @@ collection_instances {
     w: 1.0
   }
   scale3 {
-    x: 1.9
-    y: 1.9
-    z: 1.9
+    x: 1.0
+    y: 1.0
+    z: 1.0
   }
 }
 collection_instances {
@@ -54,9 +54,9 @@ collection_instances {
     w: 1.0
   }
   scale3 {
-    x: 1.9
-    y: 1.9
-    z: 1.9
+    x: 1.0
+    y: 1.0
+    z: 1.0
   }
 }
 collection_instances {
@@ -74,9 +74,9 @@ collection_instances {
     w: 1.0
   }
   scale3 {
-    x: 1.9
-    y: 1.9
-    z: 1.9
+    x: 1.0
+    y: 1.0
+    z: 1.0
   }
 }
 scale_along_z: 0
