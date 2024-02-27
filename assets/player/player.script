@@ -198,6 +198,23 @@ function on_input(self, action_id, action)
 			self.direction = -angle_between_vectors(inputVector, axisVector)
 		end
 	end
+
+	if action_id == hash("raw") then
+		local aim_x = action.gamepad_axis[3]
+		local aim_y = action.gamepad_axis[4]
+		local walk_x = action.gamepad_axis[1]
+		local walk_y = -action.gamepad_axis[2]
+		if aim_x ~= 0 or aim_y ~= 0 then
+			local inputVector = vmath.vector3(-aim_x, aim_y, 0)
+			local axisVector = vmath.vector3(0, -1, 0)
+			pprint(inputVector)
+			self.direction = -angle_between_vectors(inputVector, axisVector)
+		end
+		if walk_x ~= 0 or walk_y ~= 0 then
+			self.input.x = walk_x
+			self.input.y = walk_y
+		end
+	end
 end
 
 function on_reload(self)
