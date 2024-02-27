@@ -16,7 +16,6 @@ function on_message(self, message_id, message, sender)
 		end
 	elseif message_id == hash("scene_change") then
 		monarch.show(hash(message["scene_name"]))
-		pprint(message["props"])
 	end
 	
 end

@@ -13,6 +13,7 @@ local display_width = sys.get_config("display.width")
 local display_height = sys.get_config("display.height")
 local is_blocking = false
 local shield = nil
+local weapon = nil
 
 function init(self)
 	-- Add initialization code here
@@ -45,19 +46,25 @@ function final(self)
 end
 
 local function attack(self)
+	if weapon ~= nil then
+		return
+	end
 	local p = go.get_position()
 	local component = "#weapon_factory"
 	local props = {}
-	props[hash("/weapon")] = { 
-		rotation = self.direction
+	props[hash("/arm")] = { 
+		rotation = self.direction,
+		spawned_by = go.get_id()
 	}
 	
 	local weapons = collectionfactory.create(component, p, nil, props)
-	local weapon = nil
+	
 	-- we assume that only one weapon will be returned
 	for k,v in pairs(weapons) do
-		weapon = weapons[k]
-		break
+		if k == hash("/arm") then
+			weapon = weapons[k]
+			break
+		end
 	end
 	go.set_parent(weapon, go.get_id(), true)
 	-- msg.post(weapon, "set_parent", { parent_id = go.get_id(), keep_world_transform = 1 }) -- <7>
@@ -71,16 +78,17 @@ local function block(self)
 	}
 
 	local weapons = collectionfactory.create(component, p, nil, props)
+	pprint(weapons)
 	local weapon = nil
 	-- we assume that only one weapon will be returned
 	for k,v in pairs(weapons) do
-		weapon = weapons[k]
-		break
+		if k == hash("/arm") then
+			weapon = weapons[k]
+			break
+		end
 	end
 	shield = weapon
-	pprint(go.get_position(shield))
 	go.set_parent(shield, go.get_id(), true)
-	pprint(go.get_position(shield))
 end
 
 function update(self, dt)
@@ -103,6 +111,10 @@ function update(self, dt)
 	self.input = vmath.vector3(0,0,0)
 
 	go.set("direction_arrow_pivot", "euler.z", self.direction-90)
+
+	if shield ~= nil then
+		go.set(shield, "euler.z", self.direction-90)
+	end
 	-- go.set_rotation(vmath.vector3(0,0,self.direction), "direction_arrow_pivot")
 	-- pprint(self.direction)
 	-- pprint(go.get_position())
@@ -123,9 +135,6 @@ function fixed_update(self, dt)
 end
 
 local function take_damage(self, dmg)
-	if is_blocking then 
-		return
-	end
 	particlefx.play("#hit")
 	self.health = self.health - dmg
 	msg.post("/level#main_gui", "gui_update", { health = self.health })
@@ -154,6 +163,10 @@ function on_message(self, message_id, message, sender)
 			take_damage(self, dmg)
 		end
 	end
+
+	if message_id == hash("weapon_finished") then
+		weapon = nil
+	end
 end
 
 function on_input(self, action_id, action)
@@ -174,7 +187,8 @@ function on_input(self, action_id, action)
 	elseif action_id == input_block and action.released then
 		is_blocking = false
 		if shield ~= nil then
-			go.delete(shield)
+			go.delete(shield, true)
+			shield = nil
 		end
 	elseif not action_id then -- action_id == nil, so this is a mouse movement event
 		-- pprint(action)

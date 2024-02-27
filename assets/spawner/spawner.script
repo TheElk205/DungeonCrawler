@@ -11,11 +11,6 @@ function spawn_monster()
 	-- pprint(created)
 	local clean_created = {}
 	for key, value in pairs(created) do
-		pprint(hash(key))
-	end
-	pprint(clean_created)
-	for key, value in pairs(created) do
-		pprint(value)
 		msg.post(value, "mapping", clean_created)
 	end
 end
@@ -46,15 +41,7 @@ function on_message(self, message_id, message, sender)
 	-- Learn more: https://defold.com/manuals/message-passing/
 	-- Remove this function if not needed
 
-	if message_id == hash("trigger_response") then
-		-- print("always other id: " ..  msg.url(message['other_id']))
-		-- print("last hit: " ..  msg.url(last_hit_by))
-		-- pprint(message)
-		if message.enter and hash("weapon") == message["other_group"] then
-			-- pprint("Sender: " .. sender)
-			-- pprint(message)
-			local dmg = go.get(msg.url(nil, message.other_id, "weapon_swing"), "damage")
-			take_damage(self, dmg)
-		end
+	if message_id == hash("send_dmg") then
+		take_damage(self, message["dmg"])
 	end
 end

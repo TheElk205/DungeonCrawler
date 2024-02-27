@@ -37,7 +37,7 @@ embedded_components {
   }
 }
 embedded_components {
-  id: "collision_damage"
+  id: "collisionobject"
   type: "collisionobject"
   data: "collision_shape: \"\"\n"
   "type: COLLISION_OBJECT_TYPE_TRIGGER\n"
@@ -47,6 +47,7 @@ embedded_components {
   "group: \"weapon\"\n"
   "mask: \"enemy\"\n"
   "mask: \"player\"\n"
+  "mask: \"shield\"\n"
   "embedded_collision_shape {\n"
   "  shapes {\n"
   "    shape_type: TYPE_SPHERE\n"

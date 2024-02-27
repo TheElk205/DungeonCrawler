@@ -42,10 +42,7 @@ function on_message(self, message_id, message, sender)
 	-- Add message-handling code here
 	-- Learn more: https://defold.com/manuals/message-passing/
 	-- Remove this function if not needed
-	pprint(message_id)
-	if message_id == "mapping" then
-		pprint(message)
-	elseif message_id == hash("health") then
+	if message_id == hash("health") then
 		self.health = math.max(0, message["health"])
 		if message["max_health"] ~= nil then
 			self.max_health = math.max(0, message["max_health"])
