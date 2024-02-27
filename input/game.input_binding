@@ -38,3 +38,31 @@ mouse_trigger {
   input: MOUSE_BUTTON_RIGHT
   action: "block"
 }
+gamepad_trigger {
+  input: GAMEPAD_LPAD_LEFT
+  action: "left"
+}
+gamepad_trigger {
+  input: GAMEPAD_LPAD_RIGHT
+  action: "right"
+}
+gamepad_trigger {
+  input: GAMEPAD_LPAD_UP
+  action: "up"
+}
+gamepad_trigger {
+  input: GAMEPAD_LPAD_DOWN
+  action: "down"
+}
+gamepad_trigger {
+  input: GAMEPAD_LSHOULDER
+  action: "block"
+}
+gamepad_trigger {
+  input: GAMEPAD_RSHOULDER
+  action: "attack"
+}
+gamepad_trigger {
+  input: GAMEPAD_RAW
+  action: "raw"
+}
