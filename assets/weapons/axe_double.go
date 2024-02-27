@@ -21,7 +21,7 @@ embedded_components {
   "blend_mode: BLEND_MODE_ALPHA\n"
   "textures {\n"
   "  sampler: \"texture_sampler\"\n"
-  "  texture: \"/assets/weapons/axe_double.atlas\"\n"
+  "  texture: \"/assets/weapons/player_weapons.atlas\"\n"
   "}\n"
   ""
   position {
@@ -37,7 +37,7 @@ embedded_components {
   }
 }
 embedded_components {
-  id: "collision_damage"
+  id: "collisionobject"
   type: "collisionobject"
   data: "collision_shape: \"\"\n"
   "type: COLLISION_OBJECT_TYPE_TRIGGER\n"
@@ -47,6 +47,7 @@ embedded_components {
   "group: \"weapon\"\n"
   "mask: \"enemy\"\n"
   "mask: \"player\"\n"
+  "mask: \"shield\"\n"
   "embedded_collision_shape {\n"
   "  shapes {\n"
   "    shape_type: TYPE_SPHERE\n"

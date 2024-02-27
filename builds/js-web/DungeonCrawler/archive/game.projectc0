@@ -1,6 +1,6 @@
 [project]
 title = DungeonCrawler
-version = 0.7-beta
+version = 0.8-beta
 write_log = 0
 compress_archive = 1
 publisher = Evee Studios

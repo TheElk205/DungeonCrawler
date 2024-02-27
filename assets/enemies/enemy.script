@@ -3,6 +3,7 @@ local utils = require "game.utils"
 local speed = 16 -- pixels per second
 local last_wall_hit = os.clock()
 local player_focus = false
+local weapon = nil
 
 go.property("attack_speed_seconds", 2)
 
@@ -20,15 +21,10 @@ function init(self)
 	self.target = nil
 	self.enemy_direction = 0
 	self.should_move = true
+	
 	msg.post("healthbar/indicator#healthbar", "health", { max_health = self.health,  health = self.health})
 	msg.post("healthbar/indicator#healthbar", "follow_me")
 	msg.post("#death", "disable")
-end
-
-function final(self)
-	-- Add finalization code here
-	-- Learn more: https://defold.com/manuals/script/
-	-- Remove this function if not needed
 end
 
 function update(self, dt)
@@ -41,32 +37,29 @@ function update(self, dt)
 	if self.on_target then
 		self.direction = vmath.normalize(go.get_position(self.target) - go.get_position())
 	end
+	
 	local deltapos = self.direction * speed * dt
 	go.set_position(go.get_position() + deltapos)
 	sprite.set_hflip("#moving", self.direction.x < 0)
 end
 
-function fixed_update(self, dt)
-	-- This function is called if 'Fixed Update Frequency' is enabled in the Engine section of game.project
-	-- Can be coupled with fixed updates of the physics simulation if 'Use Fixed Timestep' is enabled in
-	-- Physics section of game.project
-	-- Add update code here
-	-- Learn more: https://defold.com/manuals/script/
-	-- Remove this function if not needed
-end
-
 local function attack(self)
+	if weapon ~= nil then
+		return
+	end
+	
 	local p = go.get_position()
 	local component = "#weapon_factory"
 	local props = {}
 	props[hash("/axe_double")] = { 
 		rotation = 0,
 		damage = 12,
-		swing_angle = 360
+		swing_angle = 360,
+		spawned_by = go.get_id()
 	}
-	local weapons = collectionfactory.create(component, p, nil, props)
+	weapons = collectionfactory.create(component, p, nil, props)
 	self.weapon = msg.url(weapons["/axe_double"])
-	local weapon_physics = msg.url(nil, weapons["/axe_double"], "collision_damage")
+	local weapon_physics = msg.url(nil, weapons["/axe_double"], "collisionobject")
 	physics.set_group(weapon_physics, "weapon_enemy")
 	-- go.set_parent(mweapon, go.get_id())
 	msg.post(self.weapon, "set_parent", { parent_id = go.get_id(), keep_world_transform = 1 }) -- <7>
@@ -78,6 +71,7 @@ local function take_damage(self, dmg)
 	msg.post("healthbar/indicator#healthbar", "health", { health = self.health})
 	if self.health <= 0 then
 		self.should_move = false
+		timer.cancel(player_focus)
 		if go_exists(self.weapon) then
 			go.delete(self.weapon)
 		end
@@ -92,18 +86,12 @@ function on_message(self, message_id, message, sender)
 	-- Add message-handling code here
 	-- Learn more: https://defold.com/manuals/message-passing/
 	-- Remove this function if not needed
+
+	if message_id == hash("send_dmg") then
+		take_damage(self, message["dmg"])
+	end
 	
 	if message_id == hash("trigger_response") then
-		-- print("always other id: " ..  msg.url(message['other_id']))
-		-- print("last hit: " ..  msg.url(last_hit_by))
-		-- pprint(message)
-		if message.enter and hash("weapon") == message["other_group"] then
-			-- pprint("Sender: " .. sender)
-			-- pprint(message)
-			local dmg = go.get(msg.url(nil, message.other_id, "weapon_swing"), "damage")
-			take_damage(self, dmg)
-		end
-
 		if hash("player") == message["other_group"] and hash("radar") == message["own_group"] then
 			if message.enter  and self.health > 0 then
 				self.on_target = true
@@ -127,24 +115,8 @@ function on_message(self, message_id, message, sender)
 		self.direction.x = (math.random(200)-100)/100 + self.direction.x
 		self.direction = vmath.normalize(self.direction)
 		last_wall_hit = os.clock()
+	elseif message_id == hash("weapon_finished") then
+		weapon = nil
 	end
 end
 
-
-function on_input(self, action_id, action)
-	-- Add input-handling code here. The game object this script is attached to
-	-- must have acquired input focus:
-	--
-	--    msg.post(".", "acquire_input_focus")
-	--
-	-- All mapped input bindings will be received. Mouse and touch input will
-	-- be received regardless of where on the screen it happened.
-	-- Learn more: https://defold.com/manuals/input/
-	-- Remove this function if not needed
-end
-
-function on_reload(self)
-	-- Add reload-handling code here
-	-- Learn more: https://defold.com/manuals/hot-reload/
-	-- Remove this function if not needed
-end

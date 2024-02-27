@@ -34,3 +34,7 @@ mouse_trigger {
   input: MOUSE_BUTTON_LEFT
   action: "attack"
 }
+mouse_trigger {
+  input: MOUSE_BUTTON_RIGHT
+  action: "block"
+}

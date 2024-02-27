@@ -1,24 +1,7 @@
-local duration = 0.2
-
-go.property("rotation", 0)
-go.property("damage", 10)
-go.property("swing_angle", 90)
-go.property("duration_seconds", 1)
-go.property("spawned_by", hash("."))
-
 function init(self)
-	local rotation = self.rotation - self.swing_angle / 2
-	go.set(go.get_id(), "euler.z", rotation)
-
-	local function callback()
-		go.delete(go.get_id(), true)
-		pprint(self.spawned_by)
-		msg.post(self.spawned_by, "weapon_finished")
-	end
-	
-	go.animate(go.get_id(), "euler.z", go.PLAYBACK_ONCE_FORWARD, rotation + self.swing_angle, go.EASING_LINEAR, self.duration_seconds, 0, callback)
-	-- timer.delay(self.duration_seconds, false, function() go.delete(go.get_id()) end)
-
+	-- Add initialization code here
+	-- Learn more: https://defold.com/manuals/script/
+	-- Remove this function if not needed
 end
 
 function final(self)
@@ -47,10 +30,9 @@ function on_message(self, message_id, message, sender)
 	-- Learn more: https://defold.com/manuals/message-passing/
 	-- Remove this function if not needed
 	if message_id == hash("trigger_response") then
-		pprint("deactivating weapon")
-		msg.post("#collisionobject", "disable")
-		pprint(sender)
-		msg.post(sender, "send_dmg" , {dmg = self.damage})
+		print("Sending damage")
+		pprint(message["other_id"])
+		msg.post(message["other_id"], "send_dmg" , {dmg = 10})
 	end
 end
 
