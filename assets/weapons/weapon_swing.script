@@ -12,6 +12,7 @@ function init(self)
 	local function callback()
 		go.delete(go.get_id())
 	end
+	
 	go.animate(go.get_id(), "euler.z", go.PLAYBACK_ONCE_FORWARD, rotation + self.swing_angle, go.EASING_LINEAR, self.duration_seconds, 0, callback)
 	-- timer.delay(self.duration_seconds, false, function() go.delete(go.get_id()) end)
 

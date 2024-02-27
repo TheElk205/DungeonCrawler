@@ -21,7 +21,7 @@ embedded_components {
   "blend_mode: BLEND_MODE_ALPHA\n"
   "textures {\n"
   "  sampler: \"texture_sampler\"\n"
-  "  texture: \"/assets/weapons/axe_double.atlas\"\n"
+  "  texture: \"/assets/weapons/player_weapons.atlas\"\n"
   "}\n"
   ""
   position {
