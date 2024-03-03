@@ -2,7 +2,8 @@ local monarch = require "monarch.monarch"
 
 -- max speed right/left
 local max_speed = 450
-
+go.property("max_block_time", 4)
+go.property("regen_speed", 0.25)
 local input_left = hash("left")
 local input_right = hash("right")
 local input_up = hash("up")
@@ -14,6 +15,15 @@ local display_height = sys.get_config("display.height")
 local is_blocking = false
 local shield = nil
 local weapon = nil
+local current_block_time = 0
+local elapsed_time = 0
+local load_percentage = 0
+local can_block = true
+local attack_stll_active = false
+local is_charging = false
+local needs_recharge = false
+local charge_speed = 1
+local charged = false
 
 function init(self)
 	-- Add initialization code here
@@ -34,8 +44,10 @@ function init(self)
 	msg.post("/level#main_gui", "gui_update", { health = self.health })
 	msg.post("#moving", "disable")
 	msg.post("healthbar/indicator#healthbar", "health", { max_health = self.health, health = self.health})
-	msg.post("healthbar/indicator#healthbar", "follow_me")
 
+	msg.post("healthbar/indicator#healthbar", "follow_me")
+	msg.post("load_bar/indicator#healthbar", "follow_me")
+	msg.post("load_bar/indicator#healthbar", "health", { max_health = 100, health = 0, auto_delete = false})
 	go.set_parent("direction_arrow_pivot", ".", true)
 end
 
@@ -45,17 +57,33 @@ function final(self)
 	-- Remove this function if not needed
 end
 
-local function attack(self)
+local function attack(self, charging, charge_attack)
+	pprint(charge)
 	if weapon ~= nil then
 		return
 	end
 	local p = go.get_position()
 	local component = "#weapon_factory"
 	local props = {}
-	props[hash("/arm")] = { 
-		rotation = self.direction,
-		spawned_by = go.get_id()
-	}
+	if charging then
+		props[hash("/arm")] = { 
+			rotation = self.direction,
+			swing_angle = 0,
+			spawned_by = go.get_id(),
+			duration_seconds = 60
+		}
+	elseif charge_attack then
+		props[hash("/arm")] = { 
+			rotation = self.direction,
+			swing_angle = 360,
+			spawned_by = go.get_id()
+		}
+	else
+		props[hash("/arm")] = { 
+			rotation = self.direction,
+			spawned_by = go.get_id()
+		}
+	end
 	
 	local weapons = collectionfactory.create(component, p, nil, props)
 	
@@ -71,6 +99,14 @@ local function attack(self)
 end
 
 local function block(self)
+	if not can_block then
+		return
+	end
+	msg.post("load_bar/indicator#healthbar", "health", { max_health = 100, health = 1})
+	
+	current_block_time = load_percentage * self.max_block_time
+	
+	is_blocking = true
 	local component = "#shield_factory"
 	local props = {}
 	props[hash("/weapon")] = { 
@@ -91,11 +127,18 @@ local function block(self)
 	go.set_parent(shield, go.get_id(), true)
 end
 
-function update(self, dt)
-	-- Add update code here
-	-- Learn more: https://defold.com/manuals/script/
-	-- Remove this function if not needed
+local function end_block(self)
+	is_blocking = false
+	if shield ~= nil then
+		go.delete(shield, true)
+		shield = nil
+	end
+end
 
+function update(self, dt)
+	elapsed_time = elapsed_time + dt
+	
+	-- Move the player
 	local speed = 32 -- pixels per second
 	local deltapos = self.input * speed * dt
 	go.set_position(go.get_position() + deltapos)
@@ -107,17 +150,48 @@ function update(self, dt)
 		msg.post("#moving", "enable")
 		msg.post("#idle", "disable")
 	end
+	
 	sprite.set_hflip("#moving", self.input.x < 0)
 	self.input = vmath.vector3(0,0,0)
 
 	go.set("direction_arrow_pivot", "euler.z", self.direction-90)
 
+	-- rotate the shield 
 	if shield ~= nil then
 		go.set(shield, "euler.z", self.direction-90)
 	end
-	-- go.set_rotation(vmath.vector3(0,0,self.direction), "direction_arrow_pivot")
-	-- pprint(self.direction)
-	-- pprint(go.get_position())
+
+	-- count shield time and drop if necessary
+	if is_blocking then
+		current_block_time = current_block_time + dt
+		pprint(current_block_time)
+		load_percentage = current_block_time / self.max_block_time
+		if current_block_time > self.max_block_time then
+			can_block = false
+			end_block(self)
+		end
+	else
+		load_percentage = math.max(0, load_percentage - self.regen_speed * dt)
+		if load_percentage == 0 then
+			can_block = true
+			needs_recharge = false
+		end
+	end
+
+	if is_charging  and not needs_recharge then
+		load_percentage = math.max(0, load_percentage + charge_speed * dt)
+		pprint(load_percentage)
+		if load_percentage >= 1 then
+			is_charging = false
+			charged = true
+		end
+	end
+
+	if charged then
+		load_percentage = 1.0
+	end
+
+	msg.post("load_bar/indicator#healthbar", "health", { health = load_percentage * 100})
 end
 
 function angle_between_vectors(v0, v1)
@@ -152,20 +226,31 @@ function on_message(self, message_id, message, sender)
 	-- Add message-handling code here
 	-- Learn more: https://defold.com/manuals/message-passing/
 	-- Remove this function if not needed
-	if message_id == hash("trigger_response") then
-		-- print("always other id: " ..  msg.url(message['other_id']))
-		-- print("last hit: " ..  msg.url(last_hit_by))
-		-- pprint(message)
-		if message.enter and hash("weapon_enemy") == message["other_group"] then
-			-- pprint("Sender: " .. sender)
-			-- pprint(message)
-			local dmg = go.get(msg.url(nil, message.other_id, "weapon_swing"), "damage")
-			take_damage(self, dmg)
-		end
+	if message_id == hash("send_dmg") then
+		take_damage(self, message["dmg"])
+	-- if message_id == hash("trigger_response") then
+	-- 	-- print("always other id: " ..  msg.url(message['other_id']))
+	-- 	-- print("last hit: " ..  msg.url(last_hit_by))
+	-- 	-- pprint(message)
+	-- 	if message.enter and hash("weapon_enemy") == message["other_group"] then
+	-- 		-- pprint("Sender: " .. sender)
+	-- 		-- pprint(message)
+	-- 		local dmg = go.get(msg.url(nil, message.other_id, "weapon_swing"), "damage")
+	-- 		take_damage(self, dmg)
+	-- 	end
 	end
 
 	if message_id == hash("weapon_finished") then
 		weapon = nil
+		if charged then
+			attack_stll_active = false
+			is_charging = false
+		end
+		
+		if attack_stll_active and not needs_recharge then
+			attack(self, true)
+			is_charging = true
+		end
 	end
 end
 
@@ -179,17 +264,25 @@ function on_input(self, action_id, action)
 	elseif action_id == input_down then
 		self.input.y = -1
 	elseif action_id == input_attack and action.pressed then
-		print("Attack pre")
-		attack(self)
+		attack_stll_active = true
+		attack(self, false)
+	elseif action_id == input_attack and action.released then
+		attack_stll_active = false
+		if weapon ~= nil then
+			go.delete(weapon, true)
+			weapon = nil
+		end
+		if charged then
+			attack(self, false, true)
+			needs_recharge = true
+		end
+		charged = false
+		is_charging = false
+		
 	elseif action_id == input_block and action.pressed then
-		is_blocking = true
 		block(self)
 	elseif action_id == input_block and action.released then
-		is_blocking = false
-		if shield ~= nil then
-			go.delete(shield, true)
-			shield = nil
-		end
+		end_block()
 	elseif not action_id then -- action_id == nil, so this is a mouse movement event
 		-- pprint(action)
 		local inputVector = vmath.vector3(action.x, action.y, 0) - vmath.vector3(display_width / 2, display_height / 2, 0)

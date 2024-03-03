@@ -1,7 +1,8 @@
 go.property("max_health", 100.0)
 go.property("health", 100.0)
 go.property("size_max_health", 50.0)
-
+go.property("auto_delete", true)
+go.property("hide_label", false)
 local number_of_bars = 1
 
 function init(self)	
@@ -9,6 +10,9 @@ function init(self)
 	scale = go.get_scale()
 	offset.x = 0
 	go.set("background#sprite", "size.x", math.max(19, self.size_max_health))
+	if self.hide_label then
+		msg.post("background#current_health_label", "disable")
+	end
 end
 
 function final(self)
@@ -47,7 +51,13 @@ function on_message(self, message_id, message, sender)
 		if message["max_health"] ~= nil then
 			self.max_health = math.max(0, message["max_health"])
 		end
-		if self.health == 0 then
+		if self.health <= 0 then
+			msg.post("sprite_helper#sprite", "disable")
+		else
+			msg.post("sprite_helper#sprite", "enable")
+		end
+		
+		if self.health <= 0 and self.auto_delete then
 			go.delete("sprite_helper")
 			go.delete("background")
 			go.delete()

@@ -1,3 +1,5 @@
+go.property("damage", 10)
+
 function init(self)
 	-- Add initialization code here
 	-- Learn more: https://defold.com/manuals/script/
@@ -32,7 +34,7 @@ function on_message(self, message_id, message, sender)
 	if message_id == hash("trigger_response") then
 		print("Sending damage")
 		pprint(message["other_id"])
-		msg.post(message["other_id"], "send_dmg" , {dmg = 10})
+		msg.post(message["other_id"], "send_dmg" , {dmg = self.damage})
 	end
 end
 

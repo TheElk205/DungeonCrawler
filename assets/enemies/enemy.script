@@ -51,18 +51,18 @@ local function attack(self)
 	local p = go.get_position()
 	local component = "#weapon_factory"
 	local props = {}
-	props[hash("/axe_double")] = { 
+	props[hash("/arm")] = { 
 		rotation = 0,
-		damage = 12,
 		swing_angle = 360,
 		spawned_by = go.get_id()
 	}
 	weapons = collectionfactory.create(component, p, nil, props)
-	self.weapon = msg.url(weapons["/axe_double"])
-	local weapon_physics = msg.url(nil, weapons["/axe_double"], "collisionobject")
+	pprint(weapons)
+	self.weapon = msg.url(weapons["/weapon"])
+	local weapon_physics = msg.url(nil, weapons["/weapon"], "collisionobject")
 	physics.set_group(weapon_physics, "weapon_enemy")
 	-- go.set_parent(mweapon, go.get_id())
-	msg.post(self.weapon, "set_parent", { parent_id = go.get_id(), keep_world_transform = 1 }) -- <7>
+	msg.post(msg.url(weapons["/arm"]), "set_parent", { parent_id = go.get_id(), keep_world_transform = 1 }) -- <7>
 end
 
 local function take_damage(self, dmg)
@@ -87,11 +87,12 @@ function on_message(self, message_id, message, sender)
 	-- Learn more: https://defold.com/manuals/message-passing/
 	-- Remove this function if not needed
 
+	-- Receive damage 
 	if message_id == hash("send_dmg") then
 		take_damage(self, message["dmg"])
-	end
-	
-	if message_id == hash("trigger_response") then
+	elseif message_id == hash("trigger_response") then
+		-- If Player enters radar, set to follow him.
+		-- If player leaves radar, set target to nil
 		if hash("player") == message["other_group"] and hash("radar") == message["own_group"] then
 			if message.enter  and self.health > 0 then
 				self.on_target = true
@@ -101,7 +102,8 @@ function on_message(self, message_id, message, sender)
 				self.target = nil
 			end
 		end
-
+		-- If Player is in attack range, start atacking with given attack speed
+		-- If Player leaves auto attack range, cancel auto attack
 		if hash("player") == message["other_group"] and hash("auto_attack") == message["own_group"] then
 			if message.enter then
 				player_focus = timer.delay(self.attack_speed_seconds, true, attack)
@@ -110,11 +112,13 @@ function on_message(self, message_id, message, sender)
 				timer.cancel(player_focus)
 			end
 		end
+	-- If we collide with a wall, get a random new direction 
 	elseif message_id == hash("collision_response") and os.clock() - last_wall_hit > 0.2 and message["group"] == hash("walls") then
 		self.direction.y = (math.random(200)-100)/100 + self.direction.y
 		self.direction.x = (math.random(200)-100)/100 + self.direction.x
 		self.direction = vmath.normalize(self.direction)
 		last_wall_hit = os.clock()
+	-- This is used to reset the weapon, so that it can not spawn multiple times.
 	elseif message_id == hash("weapon_finished") then
 		weapon = nil
 	end

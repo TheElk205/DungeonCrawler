@@ -1,7 +1,6 @@
 local duration = 0.2
 
 go.property("rotation", 0)
-go.property("damage", 10)
 go.property("swing_angle", 90)
 go.property("duration_seconds", 1)
 go.property("spawned_by", hash("."))
@@ -9,7 +8,11 @@ go.property("spawned_by", hash("."))
 function init(self)
 	local rotation = self.rotation - self.swing_angle / 2
 	go.set(go.get_id(), "euler.z", rotation)
-
+	pprint("Starting weapon rotation")
+	pprint(self.swing_angle)
+	pprint(self.duration_seconds)
+	pprint(go.get_id())
+	
 	local function callback()
 		go.delete(go.get_id(), true)
 		pprint(self.spawned_by)
@@ -17,29 +20,6 @@ function init(self)
 	end
 	
 	go.animate(go.get_id(), "euler.z", go.PLAYBACK_ONCE_FORWARD, rotation + self.swing_angle, go.EASING_LINEAR, self.duration_seconds, 0, callback)
-	-- timer.delay(self.duration_seconds, false, function() go.delete(go.get_id()) end)
-
-end
-
-function final(self)
-	-- Add finalization code here
-	-- Learn more: https://defold.com/manuals/script/
-	-- Remove this function if not needed
-end
-
-function update(self, dt)
-	-- Add update code here
-	-- Learn more: https://defold.com/manuals/script/
-	-- Remove this function if not needed
-end
-
-function fixed_update(self, dt)
-	-- This function is called if 'Fixed Update Frequency' is enabled in the Engine section of game.project
-	-- Can be coupled with fixed updates of the physics simulation if 'Use Fixed Timestep' is enabled in
-	-- Physics section of game.project
-	-- Add update code here
-	-- Learn more: https://defold.com/manuals/script/
-	-- Remove this function if not needed
 end
 
 function on_message(self, message_id, message, sender)
@@ -47,27 +27,6 @@ function on_message(self, message_id, message, sender)
 	-- Learn more: https://defold.com/manuals/message-passing/
 	-- Remove this function if not needed
 	if message_id == hash("trigger_response") then
-		pprint("deactivating weapon")
 		msg.post("#collisionobject", "disable")
-		pprint(sender)
-		msg.post(sender, "send_dmg" , {dmg = self.damage})
 	end
-end
-
-function on_input(self, action_id, action)
-	-- Add input-handling code here. The game object this script is attached to
-	-- must have acquired input focus:
-	--
-	--    msg.post(".", "acquire_input_focus")
-	--
-	-- All mapped input bindings will be received. Mouse and touch input will
-	-- be received regardless of where on the screen it happened.
-	-- Learn more: https://defold.com/manuals/input/
-	-- Remove this function if not needed
-end
-
-function on_reload(self)
-	-- Add reload-handling code here
-	-- Learn more: https://defold.com/manuals/hot-reload/
-	-- Remove this function if not needed
 end
