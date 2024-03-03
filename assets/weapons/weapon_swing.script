@@ -12,6 +12,7 @@ function init(self)
 	pprint(self.swing_angle)
 	pprint(self.duration_seconds)
 	pprint(go.get_id())
+	
 	local function callback()
 		go.delete(go.get_id(), true)
 		pprint(self.spawned_by)
