@@ -1,0 +1,38 @@
+image: "/assets/sprites/friends/shiba.png"
+tile_width: 128
+tile_height: 128
+tile_margin: 0
+tile_spacing: 0
+collision: ""
+material_tag: "tile"
+collision_groups: "default"
+animations {
+  id: "walk_left"
+  start_tile: 14
+  end_tile: 16
+  playback: PLAYBACK_LOOP_FORWARD
+  fps: 4
+  flip_horizontal: 0
+  flip_vertical: 0
+}
+animations {
+  id: "walk_right"
+  start_tile: 6
+  end_tile: 8
+  playback: PLAYBACK_LOOP_FORWARD
+  fps: 4
+  flip_horizontal: 0
+  flip_vertical: 0
+}
+animations {
+  id: "walk_up"
+  start_tile: 10
+  end_tile: 12
+  playback: PLAYBACK_ONCE_FORWARD
+  fps: 4
+  flip_horizontal: 0
+  flip_vertical: 0
+}
+extrude_borders: 2
+inner_padding: 0
+sprite_trim_mode: SPRITE_TRIM_MODE_OFF
