@@ -1,6 +1,6 @@
 local monarch = require "monarch.monarch"
 
-local is_testing = false
+local is_testing = true
 
 function init(self)
 	msg.post("#", "show_first_screen")

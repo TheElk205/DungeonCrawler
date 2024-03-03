@@ -152,16 +152,18 @@ function on_message(self, message_id, message, sender)
 	-- Add message-handling code here
 	-- Learn more: https://defold.com/manuals/message-passing/
 	-- Remove this function if not needed
-	if message_id == hash("trigger_response") then
-		-- print("always other id: " ..  msg.url(message['other_id']))
-		-- print("last hit: " ..  msg.url(last_hit_by))
-		-- pprint(message)
-		if message.enter and hash("weapon_enemy") == message["other_group"] then
-			-- pprint("Sender: " .. sender)
-			-- pprint(message)
-			local dmg = go.get(msg.url(nil, message.other_id, "weapon_swing"), "damage")
-			take_damage(self, dmg)
-		end
+	if message_id == hash("send_dmg") then
+		take_damage(self, message["dmg"])
+	-- if message_id == hash("trigger_response") then
+	-- 	-- print("always other id: " ..  msg.url(message['other_id']))
+	-- 	-- print("last hit: " ..  msg.url(last_hit_by))
+	-- 	-- pprint(message)
+	-- 	if message.enter and hash("weapon_enemy") == message["other_group"] then
+	-- 		-- pprint("Sender: " .. sender)
+	-- 		-- pprint(message)
+	-- 		local dmg = go.get(msg.url(nil, message.other_id, "weapon_swing"), "damage")
+	-- 		take_damage(self, dmg)
+	-- 	end
 	end
 
 	if message_id == hash("weapon_finished") then
