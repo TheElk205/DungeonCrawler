@@ -72,16 +72,25 @@ local function attack(self, charging, charge_attack)
 			spawned_by = go.get_id(),
 			duration_seconds = 60
 		}
+		props[hash("/weapon")] = { 
+			damage = 1
+		}
 	elseif charge_attack then
 		props[hash("/arm")] = { 
 			rotation = self.direction,
 			swing_angle = 360,
 			spawned_by = go.get_id()
 		}
-	else
+		props[hash("/weapon")] = { 
+			damage = 40
+		}
+	else -- Normal attack
 		props[hash("/arm")] = { 
 			rotation = self.direction,
 			spawned_by = go.get_id()
+		}
+		props[hash("/weapon")] = { 
+			damage = 10
 		}
 	end
 	
